@@ -14,7 +14,6 @@ import (
 	"time"
 )
 
-
 type Model interface {
 	GetTableName(needFull bool) string
 	GetID() interface{}
@@ -35,7 +34,6 @@ type MyRelationship struct {
 	CreatedAt time.Time `gorm:"column:created_at; ->;<-:create " json:"createdAt"`
 	UpdatedAt time.Time `gorm:"column:updated_at" json:"updatedAt"`
 }
-
 
 const UNIQUE_ID = "uuid"
 
@@ -69,7 +67,6 @@ func NewMyRelationship() *MyRelationship {
 	}
 }
 
-
 func (mdl *MyModel) GetID() interface{} {
 	return mdl.UUID
 }
@@ -91,7 +88,6 @@ func (mdl *MyRelationship) GetPrimaryKey() string {
 func (mdl *MyRelationship) GetForeignKey() string {
 	return "model_id"
 }
-
 
 /**
  * Scope Where Conditions
@@ -181,7 +177,6 @@ func AssociationRelationship(db *gorm.DB, conditions *gorm.DB, mdl interface{}, 
 
 	return tx.Association(relationship)
 }
-
 
 func ClearAssociation(db *gorm.DB, object Model, foreignKey string, pivot Model) error {
 	result := db.Exec("DELETE FROM "+pivot.GetTableName(true)+" WHERE "+foreignKey+"=?", object.GetID())

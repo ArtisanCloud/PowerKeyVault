@@ -1,4 +1,6 @@
 change-version:
-	sed -i "s/{{version}}/${RELEASE_VERSION}/g" ./config/version.go
+	#sed -i "s/{{version}}/${RELEASE_VERSION}/g" ./config/version.go
+	echo go version
+
 
 

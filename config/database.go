@@ -35,7 +35,8 @@ type PostgresConnection struct {
 }
 
 var (
-	DatabaseConn *PostgresConnection
+	DatabaseConn *MysqlConnection
+	// MysqlConn *MysqlConnection
 )
 
 func init() {
@@ -58,25 +59,43 @@ func parseDatabaseConfig() {
 	//log.Printf("default connection: %v", MapConnection["database"].(map[string]interface{})["default"])
 	//Info("default connection:"+viper.GetString("database.default"), nil)
 
-	strDatabaseConn := "database.connections.pgsql."
-	DatabaseConn = &PostgresConnection{
-		&DatabaseConnection{
-			viper.GetString(strDatabaseConn + "driver"),
-			viper.GetString(strDatabaseConn + "url"),
-			viper.GetString(strDatabaseConn + "host"),
-			viper.GetString(strDatabaseConn + "port"),
-			viper.GetString(strDatabaseConn + "database"),
-			viper.GetString(strDatabaseConn + "username"),
-			viper.GetString(strDatabaseConn + "password"),
-			viper.GetString(strDatabaseConn + "charset"),
-			viper.GetString(strDatabaseConn + "prefix"),
-			viper.GetString(strDatabaseConn + "prefix_indexes"),
+	strDatabaseConn := "database.connections.mysql."
+	DatabaseConn = &MysqlConnection{
+		Connection: &DatabaseConnection{
+			Driver:        viper.GetString(strDatabaseConn + "driver"),
+			Url:           viper.GetString(strDatabaseConn + "url"),
+			Host:          viper.GetString(strDatabaseConn + "host"),
+			Port:          viper.GetString(strDatabaseConn + "port"),
+			Database:      viper.GetString(strDatabaseConn + "database"),
+			Username:      viper.GetString(strDatabaseConn + "username"),
+			Password:      viper.GetString(strDatabaseConn + "password"),
+			Charset:       viper.GetString(strDatabaseConn + "charset"),
+			Prefix:        viper.GetString(strDatabaseConn + "prefix"),
+			PrefixIndexes: viper.GetString(strDatabaseConn + "prefix_indexes"),
 		},
-		//viper.GetStringSlice(strDatabaseConn + "Schema"),
-		viper.GetStringMapString(strDatabaseConn + "schemas"),
-		viper.GetString(strDatabaseConn + "search_path"),
-		viper.GetString(strDatabaseConn + "sslmode"),
+		Collation: viper.GetString(strDatabaseConn + "collation"),
+		Strict:    false,
+		Engine:    viper.GetString(strDatabaseConn + "engine"),
+		Options:   nil,
 	}
+	//DatabaseConn = &PostgresConnection{
+	//	&DatabaseConnection{
+	//		viper.GetString(strDatabaseConn + "driver"),
+	//		viper.GetString(strDatabaseConn + "url"),
+	//		viper.GetString(strDatabaseConn + "host"),
+	//		viper.GetString(strDatabaseConn + "port"),
+	//		viper.GetString(strDatabaseConn + "database"),
+	//		viper.GetString(strDatabaseConn + "username"),
+	//		viper.GetString(strDatabaseConn + "password"),
+	//		viper.GetString(strDatabaseConn + "charset"),
+	//		viper.GetString(strDatabaseConn + "prefix"),
+	//		viper.GetString(strDatabaseConn + "prefix_indexes"),
+	//	},
+	//	//viper.GetStringSlice(strDatabaseConn + "Schema"),
+	//	viper.GetStringMapString(strDatabaseConn + "schemas"),
+	//	viper.GetString(strDatabaseConn + "search_path"),
+	//	viper.GetString(strDatabaseConn + "sslmode"),
+	//}
 	//Info(viper.GetString(strDatabaseConn+"sslMode"), nil)
 	//fmt.Printf("parsed connection: %+v\n", DatabaseConn)
 

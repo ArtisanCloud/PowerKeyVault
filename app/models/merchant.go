@@ -1,7 +1,7 @@
 package models
 
 type Merchant struct {
-	Model
+	MyModel
 
 	Name     string `gorm:"column:name" json:"name"`
 	MchID    string `gorm:"column:mch_id" json:"mchID"`

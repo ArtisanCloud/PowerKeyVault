@@ -2,20 +2,19 @@ package models
 
 import (
 	"database/sql"
-	"github.com/ArtisanCloud/PowerKeyVault/config"
 	"gorm.io/gorm"
 )
 
 // TableName overrides the table name used by User to `profiles`
 func (*User) TableName() string {
-	return config.DatabaseConn.Schemas["default"] + "." + "users"
+	//return config.DatabaseConn.Schemas["default"] + "." + "users"
+	return "users"
 }
 
 type User struct {
-	Id                    int    `gorm:"json:id column:id"`
-	Password              string `gorm:"column:password json:password"`
-	Locale                string `gorm:"column:locale json:locale"`
-	UUID                  string `gorm:"column:uuid" json:"uuid" primaryKey;autoIncrement:"false" sql:"index"`
+	MyModel
+	Password string `gorm:"column:password"json:"password"`
+	Locale   string `gorm:"column:locale" json:"locale"`
 }
 
 // 模块初始化函数 import 包时被调用

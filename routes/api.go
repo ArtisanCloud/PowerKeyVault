@@ -4,9 +4,9 @@ import (
 	. "github.com/ArtisanCloud/PowerKeyVault/app/http/controllers"
 	. "github.com/ArtisanCloud/PowerKeyVault/app/http/middleware"
 	"github.com/ArtisanCloud/PowerKeyVault/app/http/request"
+	"github.com/ArtisanCloud/PowerKeyVault/app/http/request/app"
 	"github.com/gin-gonic/gin"
 )
-
 
 func InitializeAPIRoutes(router *gin.Engine) {
 
@@ -22,10 +22,10 @@ func InitializeAPIRoutes(router *gin.Engine) {
 			apiRouter.PUT("/merchant/get", request.ValidateRequestLogin, APIMerchantUpdate)
 			apiRouter.DELETE("/merchant/get", request.ValidateRequestLogin, APIMerchantDelete)
 
-			apiRouter.GET("/app/get", request.ValidateRequestLogin, APIAPPGetList)
-			apiRouter.POST("/app/get", request.ValidateRequestLogin, APIAPPCreate)
-			apiRouter.PUT("/app/get", request.ValidateRequestLogin, APIAPPUpdate)
-			apiRouter.DELETE("/app/get", request.ValidateRequestLogin, APIAPPDelete)
+			apiRouter.GET("/app/index/:page/:pageSize", app.ValidateRequestAppList, APIAPPGetList) // app 列表
+			apiRouter.POST("/app/create", app.ValidateRequestAppCreate, APIAPPCreate)              //app新增
+			apiRouter.PUT("/app/update", app.ValidateRequestAppUpdate, APIAPPUpdate)               // app修改
+			apiRouter.DELETE("/app/delete/:id", app.ValidateRequestAppDelete, APIAPPDelete)        // app删除
 
 			apiRouter.GET("/config/list", request.ValidateRequestLogin, APIConfigGetList)
 			apiRouter.POST("/config/bind", request.ValidateRequestLogin, APIConfigBind)

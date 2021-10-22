@@ -2,12 +2,14 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"github.com/ArtisanCloud/PowerKeyVault/config"
 	"github.com/golang-module/carbon"
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"log"
+	"time"
 )
 
 var (
@@ -22,19 +24,27 @@ func SetupDatabase() (err error) {
 	if timezone == "" {
 		timezone = carbon.UTC
 	}
-	dsn := "host=" + c.Host
-	dsn += " user=" + c.Username
-	dsn += " password=" + c.Password
-	dsn += " dbname=" + c.Database
-	dsn += " port=" + c.Port
-	dsn += " sslmode=" + d.SSLMode
-	dsn += " TimeZone=" + timezone
-	//fmt.Printf("%s\r\n",dsn)
+	//dsn := "host=" + c.Host
+	//dsn += " user=" + c.Username
+	//dsn += " password=" + c.Password
+	//dsn += " dbname=" + c.Database
+	//dsn += " port=" + c.Port
+	//dsn += " sslmode=" + d.SSLMode
+	//dsn += " TimeZone=" + timezone
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local", c.Username, c.Password, c.Host, c.Port, c.Database, c.Charset)
+	fmt.Println("dsn =>", dsn)
 
-	DBConnection, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Error),
-		//Logger: logger.Default.LogMode(logger.Info),
-		DisableForeignKeyConstraintWhenMigrating: true,
+	DBConnection, err = gorm.Open(mysql.New(mysql.Config{
+		DSN:                       dsn,
+		SkipInitializeWithVersion: false,
+		DefaultStringSize:         255,
+		DefaultDatetimePrecision:  nil,
+		DisableDatetimePrecision:  true,
+		DontSupportRenameIndex:    true,
+		DontSupportRenameColumn:   true,
+		DontSupportForShareClause: false,
+	}), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
 	})
 	//DBConnection.Exec("SET search_path TO " + d.SearchPath)
 
@@ -44,19 +54,12 @@ func SetupDatabase() (err error) {
 		return
 	}
 
-	//// works with Take
-	//result := map[string]interface{}{}
-	//DBConnection.Table("migrations").Take(&result)
-	//fmt.Printf("%+v\r\n", result)
-
-	//println("setup with database")
-	//DBConnection.DB().SetMaxIdleConns(10)
-	//DBConnection.DB().SetMaxOpenConns(100)
-	//DBConnection.DB().SetConnMaxLifetime(time.Hour)
-
-	//DBConnection.Logger.LogMode()
-	//DBConnection.Session(&gorm.Session{NewDB: true})
-	//fmt.Printf("init database address:%p\r\n", DBConnection)
+	DbSql, _ := DBConnection.DB()
+	DbSql.SetConnMaxLifetime(time.Hour)
+	DbSql.SetConnMaxIdleTime(time.Hour)
+	DbSql.SetMaxIdleConns(20)
+	DbSql.SetMaxOpenConns(100)
+	fmt.Println("Mysql Connect Success")
 
 	return err
 

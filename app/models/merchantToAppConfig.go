@@ -6,8 +6,8 @@ import "github.com/ArtisanCloud/PowerLibs/object"
 type MerchantToAppConfig struct {
 	*MyRelationship
 
-	Merchant *Merchant `gorm:"foreignKey:AwardableObjectUUID;references:UUID"`
-	App      *App      `gorm:"foreignKey:AwardableObjectUUID;references:UUID"`
+	Merchant *Merchant `gorm:"foreignKey:MerchantUUID;references:UUID"`
+	App      *App      `gorm:"foreignKey:AppUUID;references:UUID"`
 
 	//common fields
 	Status       int8              `gorm:"column:status" json:"status"`

@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/ArtisanCloud/PowerLibs/object"
 	"github.com/ArtisanCloud/PowerKeyVault/app/models"
 	"github.com/ArtisanCloud/PowerKeyVault/boostrap"
 	"github.com/ArtisanCloud/PowerKeyVault/database"
+	"github.com/ArtisanCloud/PowerLibs/object"
 	"os"
 	"reflect"
 )
@@ -27,6 +27,9 @@ func main() {
 
 	arrayTables := []interface{}{
 		&models.User{},
+		&models.App{},
+		&models.Merchant{},
+		&models.MerchantToAppConfig{},
 	}
 	err := migrate(arrayTables)
 

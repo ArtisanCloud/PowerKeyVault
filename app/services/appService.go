@@ -3,9 +3,8 @@ package service
 import (
 	"github.com/ArtisanCloud/PowerKeyVault/app/models"
 	"github.com/ArtisanCloud/PowerKeyVault/database"
-	"github.com/ArtisanCloud/PowerLibs/fmt"
 	"github.com/gin-gonic/gin"
-	"time"
+	"gorm.io/gorm/clause"
 )
 
 type AppService struct {
@@ -16,14 +15,17 @@ func NewAppService(c *gin.Context) *AppService {
 	return &AppService{}
 }
 
-func (service *AppService) Create() (*models.App, error) {
-	db := database.DBConnection
-	fmt.Dump(service.App)
-	dbRes := db.Create(service.App)
-	if dbRes.RowsAffected > 0 {
-		return service.App, nil
+func (service *AppService) Upsert(uniqueName string, apps []*models.App) error {
+
+	if len(apps) <= 0 {
+		return nil
 	}
-	return nil, dbRes.Error
+	result := database.DBConnection.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: uniqueName}},
+		DoUpdates: clause.AssignmentColumns(models.GetModelFields(models.App{})),
+	}).Create(&apps)
+
+	return result.Error
 }
 
 func (service *AppService) Index(page, pageSize int) ([]models.App, error) {
@@ -44,20 +46,4 @@ func (service *AppService) Delete(id int) (bool, error) {
 		return false, dbRes.Error
 	}
 	return true, nil
-}
-
-func (service *AppService) Update(id int) (bool, error) {
-	db := database.DBConnection
-	dbRes := db.Model(&models.App{}).Where("id =?", id).Updates(map[string]interface{}{
-		"name":       service.App.Name,
-		"app_id":     service.App.AppID,
-		"secret":     service.App.Secret,
-		"updated_at": time.Now(),
-	})
-
-	if dbRes.RowsAffected > 0 {
-		return true, nil
-	}
-
-	return false, dbRes.Error
 }

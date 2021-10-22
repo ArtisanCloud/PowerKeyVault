@@ -4,6 +4,7 @@ import (
 	"github.com/ArtisanCloud/PowerKeyVault/app/http/request/app"
 	"github.com/ArtisanCloud/PowerKeyVault/app/models"
 	. "github.com/ArtisanCloud/PowerKeyVault/app/services"
+	"github.com/ArtisanCloud/PowerKeyVault/config"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -45,64 +46,23 @@ func APIAPPGetList(ctx *gin.Context) {
 }
 
 // 新增app
-func APIAPPCreate(context *gin.Context) {
+func APIAPPUpsert(context *gin.Context) {
 	ctl := NewAppAPIController(context)
-	params, _ := context.Get("appCreateParams")
-	para := params.(app.Create)
-	ctl.ServiceApp.App = &models.App{
-		Name:   para.Name,
-		AppID:  para.AppID,
-		Secret: para.Secret,
-	}
-
-	r, err := ctl.ServiceApp.Create()
+	params, _ := context.Get("app")
+	app := params.(*models.App)
+	err := ctl.ServiceApp.Upsert(models.UNIQUE_ID,[]*models.App{app})
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"code":    500,
-			"message": "创建数据失败" + err.Error(),
-			"data":    nil,
-		})
+		ctl.RS.SetCode(config.API_ERR_CODE_FAIL_TO_UPSERT_APP, config.API_RETURN_CODE_ERROR, "", err.Error())
+		panic(ctl.RS)
+		return
 	}
 
-	context.JSON(http.StatusCreated, gin.H{
-		"code":    201,
-		"message": "新增app成功",
-		"data":    r,
-	})
+	ctl.RS.Success(context,nil )
 
 	return
 }
 
-// 更新app
-func APIAPPUpdate(context *gin.Context) {
-	ctl := NewAppAPIController(context)
-	contextParams, _ := context.Get("appUpdateParams")
-	params := contextParams.(app.Update)
-	ctl.ServiceApp.App = &models.App{
-		Name:   params.Name,
-		AppID:  params.AppID,
-		Secret: params.Secret,
-	}
-
-	r, err := ctl.ServiceApp.Update(params.ID)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"code":    500,
-			"message": "更新数app信息失败" + err.Error(),
-			"data":    r,
-		})
-	}
-
-	context.JSON(http.StatusCreated, gin.H{
-		"code":    201,
-		"message": "更新数app据成功",
-		"data":    r,
-	})
-
-	return
-}
 
 // 删除app
 func APIAPPDelete(context *gin.Context) {

@@ -22,10 +22,10 @@ func InitializeAPIRoutes(router *gin.Engine) {
 			apiRouter.PUT("/merchant/get", request.ValidateRequestLogin, APIMerchantUpdate)
 			apiRouter.DELETE("/merchant/get", request.ValidateRequestLogin, APIMerchantDelete)
 
-			apiRouter.GET("/app/index/:page/:pageSize", app.ValidateRequestAppList, APIAPPGetList) // app 列表
-			apiRouter.POST("/app/create", app.ValidateRequestAppCreate, APIAPPCreate)              //app新增
-			apiRouter.PUT("/app/update", app.ValidateRequestAppUpdate, APIAPPUpdate)               // app修改
-			apiRouter.DELETE("/app/delete/:id", app.ValidateRequestAppDelete, APIAPPDelete)        // app删除
+			apiRouter.GET("/app/index/:page/:pageSize", app.ValidateRequestAppList, APIAPPGetList)
+			apiRouter.POST("/app/create", app.ValidateRequestAppUpsert, APIAPPUpsert)
+			apiRouter.POST("/app/update", app.ValidateRequestAppUpsert, APIAPPUpsert)
+			apiRouter.DELETE("/app/delete/:id", app.ValidateRequestAppDelete, APIAPPDelete)
 
 			apiRouter.GET("/config/list", request.ValidateRequestLogin, APIConfigGetList)
 			apiRouter.POST("/config/bind", request.ValidateRequestLogin, APIConfigBind)
